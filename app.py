@@ -25,7 +25,7 @@ def generate_topic(category):
             engine="text-davinci-003",
             prompt=prompt,
             max_tokens=200,  # You can adjust the max_tokens as needed
-            n=5,            # You can adjust n as needed to get multiple suggestions
+            n=3,            # You can adjust n as needed to get multiple suggestions
             stop=None
         )
         
@@ -47,36 +47,36 @@ def generate_topic(category):
 # Input your desired category here
 category = "Technology"
 
-approved_topic = generate_topic(category)
-print(f"Approved Topic: {approved_topic}")
+approved_topics = generate_topic(category)
+print(f"Approved Topic: {approved_topics}")
 
 
 # Creating blogs for approved topics
-# def generate_blog_content(topic):
-#     prompt = f"Write a blog post on the following topic: {topic}"
+def generate_blog_content(topic):
+    prompt = f"Write a blog post on the following topic: {topic}"
     
-#     response = openai.Completion.create(
-#         engine="text-davinci-003",
-#         prompt=prompt,
-#         max_tokens=500,  # You can adjust the max_tokens as needed for the length of the blog
-#     )
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=500,  # You can adjust the max_tokens as needed for the length of the blog
+    )
     
-#     blog_content = response.choices[0].text.strip()
+    blog_content = response.choices[0].text.strip()
     
-#     return blog_content
+    return blog_content
 
 # Generate blogs for approved topics
-# blog_posts = {}
-# for i, topic in enumerate(approved_topics, start=1):
-#     print(f"Generating blog for Approved Topic {i}: {topic}")
-#     blog_content = generate_blog_content(topic)
-#     blog_posts[topic] = blog_content
+blog_posts = {}
+for i, topic in enumerate(approved_topics, start=1):
+    print(f"Generating blog for Approved Topic {i}: {topic}")
+    blog_content = generate_blog_content(topic)
+    blog_posts[topic] = blog_content
 
 # Print or save the generated blogs
-# for topic, content in blog_posts.items():
-#     print(f"--- Blog Post for {topic} ---")
-#     print(content)
-#     print("\n")
+for topic, content in blog_posts.items():
+    print(f"--- Blog Post for {topic} ---")
+    print(content)
+    print("\n")
 
 
 # Posting on wordpress
