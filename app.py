@@ -65,18 +65,56 @@ def generate_blog_content(topic):
     
     return blog_content
 
-# Generate blogs for approved topics
-blog_posts = {}
-for i, topic in enumerate(approved_topics, start=1):
-    print(f"Generating blog for Approved Topic {i}: {topic}")
-    blog_content = generate_blog_content(topic)
-    blog_posts[topic] = blog_content
+def approve_blog(blog_content):
+    print("--- Blog Topic ---")
+    print(topic)
+    print("\n")
+    print("--- Blog Content ---")
+    print(blog_content)
+    print("\n")
+    approval = input("Do you approve this blog? (y/n): ").strip().lower()
+    return approval == 'y'
 
-# Print or save the generated blogs
-for topic, content in blog_posts.items():
-    print(f"--- Blog Post for {topic} ---")
+# Generate and review blogs for approved topics
+approved_blogs = {}
+for topic in approved_topics:
+    blog_content = generate_blog_content(topic)
+    if approve_blog(blog_content):
+        approved_blogs[topic] = blog_content
+
+# Print or save the approved blogs
+for topic, content in approved_blogs.items():
+    print(f"--- Approved Blog for {topic} ---")
     print(content)
     print("\n")
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 
 # Posting on wordpress
