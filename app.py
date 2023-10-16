@@ -1,4 +1,4 @@
-#Imort statements
+# Imports
 import requests
 import os
 from dotenv import load_dotenv
@@ -8,11 +8,7 @@ import openai
 load_dotenv()
 
 # Access the environment variables
-# api_endpoint = os.getenv("API_ENDPOINT")
-# api_key = os.getenv("API_KEY")
-# api_secret = os.getenv("API_SECRET")
 openai.api_key = os.getenv("OPENAI_API_KEY")
-
 
 
 # Creating Post topics by provided category with manual approval
@@ -45,7 +41,8 @@ def generate_topic(category):
             return approved_topics
 
 # Input your desired category here
-category = "Socail Media"
+category = input('Enter a Category: ')
+
 
 approved_topics = generate_topic(category)
 print(f"Approved Topic: {approved_topics}")
@@ -99,54 +96,3 @@ for topic, content in approved_blogs.items():
     print(content)
     print("\n")
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-
-# Posting on wordpress
-
-# Create the post data (customize this to your needs)
-# post_data = {
-#     'title': 'Your Daily Blog Post Title',
-#     'content': 'Your blog post content goes here.',
-#     'status': 'publish',
-# }
-
-# Set up the request headers with basic authentication
-# headers = {
-#     'Authorization': 'Basic ' + base64.b64encode(f'{api_key}:{api_secret}'.encode()).decode(),
-#     'Content-Type': 'application/json',
-# }
-
-# Send the POST request to create the post
-# response = requests.post(api_endpoint, json=post_data, headers=headers)
-
-# if response.status_code == 201:
-#     print('Post created successfully.')
-# else:
-#     print('Error:', response.status_code, response.text)
