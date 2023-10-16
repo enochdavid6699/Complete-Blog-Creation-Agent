@@ -49,9 +49,6 @@ if category:
     approved_topics = generate_topic(category)
     st.write(f"Approved Topics: {approved_topics}")
 
-# ... (the rest of your code)
-
-
 # Creating blogs for approved topics
 def generate_blog_content(topic):
     prompt = f"Write a blog post on the following topic: {topic}"
