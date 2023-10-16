@@ -45,7 +45,7 @@ def generate_topic(category):
             return approved_topics
 
 # Input your desired category here
-category = "Technology"
+category = "Socail Media"
 
 approved_topics = generate_topic(category)
 print(f"Approved Topic: {approved_topics}")
@@ -73,14 +73,25 @@ def approve_blog(blog_content):
     print(blog_content)
     print("\n")
     approval = input("Do you approve this blog? (y/n): ").strip().lower()
-    return approval == 'y'
+    
+    if approval == 'y': 
+        return 'y'
+    else:
+        return 
+        
 
 # Generate and review blogs for approved topics
 approved_blogs = {}
 for topic in approved_topics:
-    blog_content = generate_blog_content(topic)
-    if approve_blog(blog_content):
-        approved_blogs[topic] = blog_content
+    
+    while True:
+        blog_content = generate_blog_content(topic)
+        if approve_blog(blog_content):
+            approved_blogs[topic] = blog_content
+            break
+        else: 
+            blog_content = generate_blog_content(topic)
+        
 
 # Print or save the approved blogs
 for topic, content in approved_blogs.items():
