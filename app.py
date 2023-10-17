@@ -80,18 +80,51 @@ def approve_blog(blog_content, topic):
 if approved_topics:
     approved_blogs = {}
     for topic in approved_topics:
+        blog_seo = generate_seo_keywords(topic)
         while True:
             blog_content = generate_blog_content(topic)
             user_approval = approve_blog(blog_content, topic)
             if user_approval == 'Yes':
-                approved_blogs[topic] = blog_content
+                approved_blogs[topic] = {
+                    'content': blog_content,
+                    'seo_keywords': blog_seo
+                }
                 break
             else: 
                 blog_content = generate_blog_content(topic)
 
     # Print or save the approved blogs
-    for topic, content in approved_blogs.items():
+    for topic, data in approved_blogs.items():
         st.write(f"--- Approved Blog for {topic} ---")
-        st.write(content)
+        st.write("Content:")
+        st.write(data['content'])
+        st.write("\n")
+        st.write("SEO Keywords:")
+        st.write(data['seo_keywords'])
         st.write("\n")
 
+
+# SEO Keyword Generation 
+def generate_seo_keywords(topic):
+    prompt = f"Generate seo keywords for the following topic: {topic}"
+    response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=prompt,
+            max_tokens=200,  # You can adjust the max_tokens as needed
+            n=3,            # You can adjust n as needed to get multiple suggestions
+            stop=None
+        )
+    return response.choices[0].text
+
+
+# Image Prompt Generation
+def generate_image_prompt(topic):
+    prompt = f"Generate prompt for graphic/image generation of following topic: {topic}"
+    response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=prompt,
+            max_tokens=200,  # You can adjust the max_tokens as needed
+            n=3,            # You can adjust n as needed to get multiple suggestions
+            stop=None
+        )
+    return response.choices[0].text
