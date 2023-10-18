@@ -1,4 +1,3 @@
-# Imports
 import os
 from dotenv import load_dotenv
 import openai
@@ -10,34 +9,39 @@ load_dotenv()
 # Access the environment variables
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# Creating Post topics by provided category with manual approval
+# Function to generate a topic based on a category
 def generate_topic(category):
     while True:
         prompt = f"Generate a topic related to the category: {category}"
-        
+
         response = openai.Completion.create(
             engine="text-davinci-003",
             prompt=prompt,
             max_tokens=200,  # You can adjust the max_tokens as needed
-            n=3,            # You can adjust n as needed to get multiple suggestions
+            n=3,  # You can adjust n as needed to get multiple suggestions
             stop=None
         )
-        
+
         topics = [choice.text.strip() for choice in response.choices]
-        
+
         st.write("Generated Topics:")
         for i, topic in enumerate(topics, start=1):
             st.write(f"Generated Topic {i}:\n{topic}\n")
-        
-        approval = st.text_input("Do you approve any of these topics? Enter the number(s) of the topic(s) you approve (e.g., '1 3'), 'n' to generate a new topic, or 'y' if you want to approve all topics:")
+
+        approval = st.text_input(
+            "Do you approve any of these topics? Enter the number(s) of the topic(s) you approve (e.g., '1 3'), 'n' to generate a new topic, or 'y' if you want to approve all topics:"
+        )
         if approval == 'n':
             st.write("Generating a new topic...\n")
         elif approval == 'y':
             approved_topics = topics
             return approved_topics
         else:
-            approved_topics = [topics[int(index) - 1] for index in approval.split()]
-            return approved_topics
+            try:
+                approved_topics = [topics[int(index) - 1] for index in approval.split()]
+                return approved_topics
+            except (ValueError, IndexError):
+                st.write("Invalid input. Please enter valid topic numbers.")
 
 # Input your desired category here
 st.title('Blog Topic Generation')
@@ -49,20 +53,21 @@ if category:
     approved_topics = generate_topic(category)
     st.write(f"Approved Topics: {approved_topics}")
 
-# Creating blogs for approved topics
+# Function to generate blog content based on a topic
 def generate_blog_content(topic):
     prompt = f"Write a blog post on the following topic: {topic}"
-    
+
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
         max_tokens=500,  # You can adjust the max_tokens as needed for the length of the blog
     )
-    
+
     blog_content = response.choices[0].text.strip()
-    
+
     return blog_content
 
+# Function to approve or reject generated blog content
 def approve_blog(blog_content, topic):
     st.write("--- Blog Topic ---")
     st.write(topic)
@@ -70,61 +75,59 @@ def approve_blog(blog_content, topic):
     st.write("--- Blog Content ---")
     st.write(blog_content)
     st.write("\n")
-    # Generate a unique key based on the topic
     key = f"approval_{topic.replace(' ', '_')}"
     approval = st.radio("Do you approve this blog?", ('Yes', 'No'), key=key)
-    
+
     return approval
+
+# Function to generate SEO keywords
+def generate_seo_keywords(topic):
+    prompt = f"Generate SEO keywords for the following topic: {topic}"
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=200,  # You can adjust the max_tokens as needed
+        n=3,  # You can adjust n as needed to get multiple suggestions
+        stop=None
+    )
+    seo_keywords = response.choices[0].text
+    return seo_keywords
+
+# Function to generate image prompts
+def generate_image_prompt(topic):
+    prompt = f"Generate a prompt for graphic/image generation for the following topic: {topic}"
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=200,  # You can adjust the max_tokens as needed
+        n=3,  # You can adjust n as needed to get multiple suggestions
+        stop=None
+    )
+    image_prompt = response.choices[0].text
+    return image_prompt
 
 # Generate and review blogs for approved topics
 if approved_topics:
     approved_blogs = {}
     for topic in approved_topics:
-        blog_seo = generate_seo_keywords(topic)
-        while True:
-            blog_content = generate_blog_content(topic)
-            user_approval = approve_blog(blog_content, topic)
-            if user_approval == 'Yes':
-                approved_blogs[topic] = {
-                    'content': blog_content,
-                    'seo_keywords': blog_seo
-                }
-                break
-            else: 
-                blog_content = generate_blog_content(topic)
+        blog_content = generate_blog_content(topic)
+        user_approval = approve_blog(blog_content, topic)
+        if user_approval == 'Yes':
+            seo_keywords = generate_seo_keywords(topic)
+            image_prompt = generate_image_prompt(topic)
+            approved_blogs[topic] = {
+                'content': blog_content,
+                'seo_keywords': seo_keywords,
+                'image_prompt': image_prompt
+            }
 
-    # Print or save the approved blogs
+    # Display approved blogs, SEO keywords, and image prompts
     for topic, data in approved_blogs.items():
         st.write(f"--- Approved Blog for {topic} ---")
         st.write("Content:")
         st.write(data['content'])
-        st.write("\n")
         st.write("SEO Keywords:")
         st.write(data['seo_keywords'])
+        st.write("Image Prompt:")
+        st.write(data['image_prompt'])
         st.write("\n")
-
-
-# SEO Keyword Generation 
-def generate_seo_keywords(topic):
-    prompt = f"Generate seo keywords for the following topic: {topic}"
-    response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=prompt,
-            max_tokens=200,  # You can adjust the max_tokens as needed
-            n=3,            # You can adjust n as needed to get multiple suggestions
-            stop=None
-        )
-    return response.choices[0].text
-
-
-# Image Prompt Generation
-def generate_image_prompt(topic):
-    prompt = f"Generate prompt for graphic/image generation of following topic: {topic}"
-    response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=prompt,
-            max_tokens=200,  # You can adjust the max_tokens as needed
-            n=3,            # You can adjust n as needed to get multiple suggestions
-            stop=None
-        )
-    return response.choices[0].text
